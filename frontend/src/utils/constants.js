@@ -1,0 +1,55 @@
+export const COLORS = {
+  primary: '#2563EB',
+  primaryDark: '#1D4ED8',
+  primaryLight: '#EFF6FF',
+  accent: '#0E9F6E',
+  accentLight: '#F0FDF4',
+  background: '#F8FAFC',
+  card: '#FFFFFF',
+  surface: '#F1F5F9',
+  text: '#0F172A',
+  textSecondary: '#475569',
+  textMuted: '#94A3B8',
+  border: '#E2E8F0',
+  white: '#FFFFFF',
+  error: '#DC2626',
+  success: '#16A34A',
+  warning: '#D97706',
+  navy: '#0D1B2A',
+};
+
+export const API_BASE_URL = 'http://192.168.1.8:5000/api';
+
+export const SPEC_COLORS = {
+  'Cardiologist': { bg: '#FEE2E2', text: '#991B1B', icon: '❤️' },
+  'Neurologist': { bg: '#EDE9FE', text: '#5B21B6', icon: '🧠' },
+  'Orthopedist': { bg: '#DBEAFE', text: '#1E40AF', icon: '🦴' },
+  'Dermatologist': { bg: '#D1FAE5', text: '#065F46', icon: '🌿' },
+  'Gastroenterologist': { bg: '#FEF3C7', text: '#92400E', icon: '🍃' },
+  'Pediatrician': { bg: '#FCE7F3', text: '#9D174D', icon: '👶' },
+  'Pulmonologist': { bg: '#E0F2FE', text: '#075985', icon: '🫁' },
+  'Gynecologist': { bg: '#FDF2F8', text: '#86198F', icon: '👩‍⚕️' },
+  'Psychiatrist': { bg: '#F5F3FF', text: '#4C1D95', icon: '🧘' },
+  'Ophthalmologist': { bg: '#ECFDF5', text: '#064E3B', icon: '👁️' },
+  'ENT Specialist': { bg: '#FFF7ED', text: '#92400E', icon: '👂' },
+  'Endocrinologist': { bg: '#F0F9FF', text: '#0C4A6E', icon: '⚗️' },
+  'General Physician': { bg: '#F8FAFC', text: '#1E293B', icon: '🩺' },
+  'Dentist': { bg: '#FEF9C3', text: '#713F12', icon: '🦷' },
+  'Oncologist': { bg: '#FFF1F2', text: '#9F1239', icon: '🎗️' },
+  'Urologist': { bg: '#EFF6FF', text: '#1E3A5F', icon: '🔬' },
+};
+
+export const SYMPTOM_CATEGORIES = [
+  { label: 'Heart', symptoms: ['Chest Pain', 'Heart Palpitations'], icon: '❤️', color: '#EF4444' },
+  { label: 'Brain', symptoms: ['Headache', 'Migraine', 'Dizziness'], icon: '🧠', color: '#8B5CF6' },
+  { label: 'Skin', symptoms: ['Skin Rash', 'Acne', 'Eczema'], icon: '🌿', color: '#10B981' },
+  { label: 'Stomach', symptoms: ['Stomach Pain', 'Nausea'], icon: '🍃', color: '#F59E0B' },
+  { label: 'Joints', symptoms: ['Joint Pain', 'Back Pain'], icon: '🦴', color: '#3B82F6' },
+  { label: 'General', symptoms: ['Fever', 'Cold', 'Fatigue'], icon: '🩺', color: '#6B7280' },
+  { label: 'Lungs', symptoms: ['Cough', 'Breathlessness'], icon: '🫁', color: '#0EA5E9' },
+  { label: 'Mental', symptoms: ['Anxiety', 'Depression'], icon: '🧘', color: '#A855F7' },
+  { label: 'Eyes', symptoms: ['Eye Pain', 'Blurred Vision'], icon: '👁️', color: '#14B8A6' },
+  { label: 'ENT', symptoms: ['Ear Pain', 'Sore Throat'], icon: '👂', color: '#F97316' },
+  { label: 'Child', symptoms: ['Child Fever'], icon: '👶', color: '#EC4899' },
+  { label: 'Cancer', symptoms: ['Lump', 'Unexplained Weight Loss'], icon: '🎗️', color: '#E11D48' },
+];

@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MediFind — Find the Right Care, Near You</title>
+  <meta name="description" content="MediFind helps you discover top doctors and hospitals near you, with real-time schedules and specializations." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo" onclick="showPage('home')">
+        <span class="logo-mark">✚</span>
+        <span class="logo-text">MediFind</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#" class="nav-link" onclick="showPage('home')">Home</a></li>
+        <li><a href="#" class="nav-link" onclick="showPage('hospitals')">Hospitals</a></li>
+        <li><a href="#" class="nav-link" onclick="showPage('doctors')">Doctors</a></li>
+        <li><a href="#" class="nav-link" onclick="showPage('about')">About</a></li>
+      </ul>
+      <a href="#" class="btn btn-primary nav-cta" onclick="showPage('hospitals')">Find a Doctor</a>
+      <button class="hamburger" id="hamburger" onclick="toggleMenu()">☰</button>
+    </div>
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="#" onclick="showPage('home');toggleMenu()">Home</a>
+      <a href="#" onclick="showPage('hospitals');toggleMenu()">Hospitals</a>
+      <a href="#" onclick="showPage('doctors');toggleMenu()">Doctors</a>
+      <a href="#" onclick="showPage('about');toggleMenu()">About</a>
+    </div>
+  </nav>
+
+  <!-- HOME PAGE -->
+  <div id="page-home" class="page active">
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-bg"></div>
+      <div class="hero-content container">
+        <div class="hero-badge">🏥 India's Trusted Medical Directory</div>
+        <h1 class="hero-title">Find the Right Doctor,<br /><span class="hero-accent">Right Near You</span></h1>
+        <p class="hero-subtitle">Search from 30+ verified specialists across 12 top hospitals. View schedules, fees, and hospital affiliations — all in one place.</p>
+
+        <div class="search-box">
+          <div class="search-field">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="heroSearch" placeholder="Search doctors, hospitals, specializations..." />
+          </div>
+          <button class="btn btn-primary search-cta" onclick="handleHeroSearch()">Search Now</button>
+        </div>
+
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <span class="hero-stat-num" id="stat-doctors">30+</span>
+            <span class="hero-stat-label">Verified Doctors</span>
+          </div>
+          <div class="hero-stat-divider"></div>
+          <div class="hero-stat">
+            <span class="hero-stat-num" id="stat-hospitals">12</span>
+            <span class="hero-stat-label">Top Hospitals</span>
+          </div>
+          <div class="hero-stat-divider"></div>
+          <div class="hero-stat">
+            <span class="hero-stat-num">16+</span>
+            <span class="hero-stat-label">Specializations</span>
+          </div>
+          <div class="hero-stat-divider"></div>
+          <div class="hero-stat">
+            <span class="hero-stat-num">53+</span>
+            <span class="hero-stat-label">Active Schedules</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-cards-float">
+        <div class="float-card fc1">
+          <span class="fc-icon">❤️</span>
+          <div>
+            <div class="fc-title">Cardiologist</div>
+            <div class="fc-sub">3 doctors available</div>
+          </div>
+        </div>
+        <div class="float-card fc2">
+          <span class="fc-icon">🧠</span>
+          <div>
+            <div class="fc-title">Neurologist</div>
+            <div class="fc-sub">2 doctors available</div>
+          </div>
+        </div>
+        <div class="float-card fc3">
+          <span class="fc-icon">⭐</span>
+          <div>
+            <div class="fc-title">Top Rated</div>
+            <div class="fc-sub">Rating 4.8+</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SPECIALIZATIONS -->
+    <section class="section spec-section">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-label">Browse by Specialization</div>
+          <h2 class="section-title">What Are You Looking For?</h2>
+          <p class="section-sub">Click any specialization to see all available doctors</p>
+        </div>
+        <div class="spec-grid" id="specGrid"></div>
+      </div>
+    </section>
+
+    <!-- FEATURED HOSPITALS -->
+    <section class="section featured-section">
+      <div class="container">
+        <div class="section-header-row">
+          <div>
+            <div class="section-label">Top Facilities</div>
+            <h2 class="section-title">Featured Hospitals</h2>
+          </div>
+          <a href="#" class="btn btn-outline" onclick="showPage('hospitals')">View All Hospitals →</a>
+        </div>
+        <div class="hospitals-grid" id="featuredHospitals">
+          <div class="skeleton-loader"></div>
+          <div class="skeleton-loader"></div>
+          <div class="skeleton-loader"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURED DOCTORS -->
+    <section class="section doctors-section">
+      <div class="container">
+        <div class="section-header-row">
+          <div>
+            <div class="section-label">Medical Experts</div>
+            <h2 class="section-title">Top-Rated Doctors</h2>
+          </div>
+          <a href="#" class="btn btn-outline" onclick="showPage('doctors')">View All Doctors →</a>
+        </div>
+        <div class="doctors-grid" id="featuredDoctors">
+          <div class="skeleton-loader"></div>
+          <div class="skeleton-loader"></div>
+          <div class="skeleton-loader"></div>
+          <div class="skeleton-loader"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WHY MEDIFIND -->
+    <section class="section why-section">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-label">Why MediFind</div>
+          <h2 class="section-title">Healthcare Made Simple</h2>
+        </div>
+        <div class="why-grid">
+          <div class="why-card">
+            <div class="why-icon">🔍</div>
+            <h3>Smart Search</h3>
+            <p>Find doctors by symptom, specialization, or hospital name instantly.</p>
+          </div>
+          <div class="why-card">
+            <div class="why-icon">📅</div>
+            <h3>Live Schedules</h3>
+            <p>See exactly which days and hours a doctor visits each hospital.</p>
+          </div>
+          <div class="why-card">
+            <div class="why-icon">🏥</div>
+            <h3>Hospital Profiles</h3>
+            <p>Browse facilities, bed counts, emergency status and full medical teams.</p>
+          </div>
+          <div class="why-card">
+            <div class="why-icon">📞</div>
+            <h3>Direct Contact</h3>
+            <p>Call hospitals or doctor offices directly from their profile page.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- HOSPITALS PAGE -->
+  <div id="page-hospitals" class="page">
+    <div class="page-hero small-hero">
+      <div class="container">
+        <div class="page-hero-content">
+          <h1>Top Hospitals</h1>
+          <p>Explore verified hospitals with full doctor rosters, facilities, and contact info</p>
+          <div class="filter-bar">
+            <input type="text" id="hospitalSearch" placeholder="Search hospitals..." oninput="filterHospitals()" />
+            <button class="filter-btn" id="emergencyFilter" onclick="toggleEmergencyFilter()">🚨 Emergency Only</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container section">
+      <div class="page-stats">
+        <span id="hos-count" class="page-stat-text">Loading...</span>
+      </div>
+      <div class="hospitals-grid-full" id="hospitalsGrid"></div>
+    </div>
+  </div>
+
+  <!-- HOSPITAL DETAIL PAGE -->
+  <div id="page-hospital-detail" class="page">
+    <div class="container" style="padding-top:100px;">
+      <button class="back-btn" onclick="goBack()">← Back</button>
+      <div id="hospitalDetailContent"></div>
+    </div>
+  </div>
+
+  <!-- DOCTORS PAGE -->
+  <div id="page-doctors" class="page">
+    <div class="page-hero small-hero">
+      <div class="container">
+        <div class="page-hero-content">
+          <h1>Our Specialists</h1>
+          <p>30+ verified doctors across 16 specializations and 12 hospitals</p>
+          <div class="filter-bar">
+            <input type="text" id="doctorSearch" placeholder="Search by name, specialization..." oninput="filterDoctors()" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container section">
+      <div class="spec-filter-row" id="specFilterRow"></div>
+      <div class="sort-row">
+        <span id="doc-count" class="page-stat-text">Loading...</span>
+        <div class="sort-btns">
+          <button class="sort-btn active" onclick="sortDoctors('rating',this)">⭐ Best Rated</button>
+          <button class="sort-btn" onclick="sortDoctors('experience',this)">🏅 Most Experienced</button>
+          <button class="sort-btn" onclick="sortDoctors('fee',this)">💰 Lowest Fee</button>
+        </div>
+      </div>
+      <div class="doctors-grid-full" id="doctorsGrid"></div>
+    </div>
+  </div>
+
+  <!-- DOCTOR DETAIL PAGE -->
+  <div id="page-doctor-detail" class="page">
+    <div class="container" style="padding-top:100px;">
+      <button class="back-btn" onclick="goBack()">← Back</button>
+      <div id="doctorDetailContent"></div>
+    </div>
+  </div>
+
+  <!-- ABOUT PAGE -->
+  <div id="page-about" class="page">
+    <div class="page-hero small-hero">
+      <div class="container">
+        <div class="page-hero-content">
+          <h1>About MediFind</h1>
+          <p>Built to make healthcare discovery effortless</p>
+        </div>
+      </div>
+    </div>
+    <div class="container section">
+      <div class="about-grid">
+        <div class="about-text">
+          <h2>Our Mission</h2>
+          <p>MediFind was built to solve a real problem — when you move to a new city, finding the right specialist, understanding their schedules, and knowing which hospitals they work at is a fragmented, frustrating experience.</p>
+          <p>We aggregate verified doctor and hospital data to give you a complete, transparent picture before you ever pick up the phone.</p>
+          <h2 style="margin-top:32px;">What Makes Us Different</h2>
+          <ul class="about-list">
+            <li>✅ Real visiting schedules, not just contact information</li>
+            <li>✅ Bidirectional mapping — see a hospital's full team or a doctor's full hospital list</li>
+            <li>✅ Direct call integration — no middlemen</li>
+            <li>✅ Verified, curated data across 12 major Indian hospitals</li>
+          </ul>
+        </div>
+        <div class="about-cards">
+          <div class="about-stat-card">
+            <div class="about-stat-num">30+</div>
+            <div class="about-stat-label">Verified Doctors</div>
+          </div>
+          <div class="about-stat-card">
+            <div class="about-stat-num">12</div>
+            <div class="about-stat-label">Partner Hospitals</div>
+          </div>
+          <div class="about-stat-card">
+            <div class="about-stat-num">16</div>
+            <div class="about-stat-label">Specializations</div>
+          </div>
+          <div class="about-stat-card">
+            <div class="about-stat-num">53+</div>
+            <div class="about-stat-label">Active Schedules</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <span class="logo-mark">✚</span>
+        <span class="logo-text">MediFind</span>
+        <p>Your trusted healthcare companion</p>
+      </div>
+      <div class="footer-links">
+        <h4>Navigate</h4>
+        <a href="#" onclick="showPage('home')">Home</a>
+        <a href="#" onclick="showPage('hospitals')">Hospitals</a>
+        <a href="#" onclick="showPage('doctors')">Doctors</a>
+        <a href="#" onclick="showPage('about')">About</a>
+      </div>
+      <div class="footer-links">
+        <h4>Specializations</h4>
+        <a href="#">Cardiology</a>
+        <a href="#">Neurology</a>
+        <a href="#">Orthopedics</a>
+        <a href="#">Oncology</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container">© 2025 MediFind. Built with care for your health.</div>
+    </div>
+  </footer>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
