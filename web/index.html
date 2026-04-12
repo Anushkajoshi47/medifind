@@ -25,7 +25,22 @@
         <li><a href="#" class="nav-link" onclick="showPage('doctors')">Doctors</a></li>
         <li><a href="#" class="nav-link" onclick="showPage('about')">About</a></li>
       </ul>
-      <a href="#" class="btn btn-primary nav-cta" onclick="showPage('hospitals')">Find a Doctor</a>
+
+      <!-- Auth area -->
+      <div class="nav-auth">
+        <a href="#" class="btn btn-primary nav-cta" id="navLoginBtn" onclick="openAuthModal('login')">Sign In</a>
+        <div class="nav-user-menu" id="navUserMenu" style="display:none">
+          <div class="nav-avatar" onclick="toggleUserDropdown()">
+            <span class="nav-avatar-icon">👤</span>
+            <span id="navUserName" class="nav-user-name"></span>
+            <span class="nav-chevron">▾</span>
+          </div>
+          <div class="user-dropdown" id="userDropdown">
+            <div class="user-dropdown-item" onclick="handleLogout()">🚪 Sign Out</div>
+          </div>
+        </div>
+      </div>
+
       <button class="hamburger" id="hamburger" onclick="toggleMenu()">☰</button>
     </div>
     <div class="mobile-menu" id="mobileMenu">
@@ -33,8 +48,82 @@
       <a href="#" onclick="showPage('hospitals');toggleMenu()">Hospitals</a>
       <a href="#" onclick="showPage('doctors');toggleMenu()">Doctors</a>
       <a href="#" onclick="showPage('about');toggleMenu()">About</a>
+      <a href="#" id="mobileLoginBtn" onclick="openAuthModal('login');toggleMenu()">Sign In</a>
     </div>
   </nav>
+
+  <!-- ═══════════════════════ AUTH MODAL ═══════════════════════ -->
+  <div class="auth-modal-overlay" id="authModal">
+    <div class="auth-modal">
+      <button class="auth-close" onclick="closeAuthModal()">✕</button>
+
+      <!-- Branding -->
+      <div class="auth-brand">
+        <span class="logo-mark" style="font-size:28px">✚</span>
+        <span class="logo-text" style="font-size:22px;color:#1E293B">MediFind</span>
+      </div>
+      <p class="auth-tagline">Your trusted healthcare companion</p>
+
+      <!-- Tabs -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login"  onclick="switchAuthTab('login')">Sign In</button>
+        <button class="auth-tab"        data-tab="signup" onclick="switchAuthTab('signup')">Create Account</button>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <form id="loginForm" onsubmit="handleLogin(event)" autocomplete="on">
+        <div class="auth-field">
+          <label class="auth-label">Email address</label>
+          <input class="auth-input" id="loginEmail" type="email" placeholder="you@example.com" required autocomplete="email" />
+        </div>
+        <div class="auth-field">
+          <label class="auth-label">Password</label>
+          <div class="auth-pw-wrap">
+            <input class="auth-input" id="loginPassword" type="password" placeholder="Your password" required autocomplete="current-password" />
+            <button type="button" class="pw-toggle" onclick="togglePw('loginPassword',this)">👁</button>
+          </div>
+        </div>
+        <div class="auth-error" id="loginError"></div>
+        <button class="auth-submit-btn" id="loginBtn" type="submit">Sign In</button>
+        <p class="auth-switch">
+          Don't have an account?
+          <a href="#" onclick="switchAuthTab('signup')">Create one free →</a>
+        </p>
+      </form>
+
+      <!-- SIGNUP FORM -->
+      <form id="signupForm" onsubmit="handleSignup(event)" style="display:none" autocomplete="on">
+        <div class="auth-field">
+          <label class="auth-label">Full Name</label>
+          <input class="auth-input" id="signupName" type="text" placeholder="Dr. / Mr. / Ms. Your Name" required autocomplete="name" />
+        </div>
+        <div class="auth-field">
+          <label class="auth-label">Email address</label>
+          <input class="auth-input" id="signupEmail" type="email" placeholder="you@example.com" required autocomplete="email" />
+        </div>
+        <div class="auth-field">
+          <label class="auth-label">Password <span style="color:#94A3B8;font-size:11px">(min. 6 chars)</span></label>
+          <div class="auth-pw-wrap">
+            <input class="auth-input" id="signupPassword" type="password" placeholder="Create a strong password" required autocomplete="new-password" />
+            <button type="button" class="pw-toggle" onclick="togglePw('signupPassword',this)">👁</button>
+          </div>
+        </div>
+        <div class="auth-field">
+          <label class="auth-label">Confirm Password</label>
+          <div class="auth-pw-wrap">
+            <input class="auth-input" id="signupConfirm" type="password" placeholder="Repeat your password" required autocomplete="new-password" />
+            <button type="button" class="pw-toggle" onclick="togglePw('signupConfirm',this)">👁</button>
+          </div>
+        </div>
+        <div class="auth-error" id="signupError"></div>
+        <button class="auth-submit-btn" id="signupBtn" type="submit">Create Account</button>
+        <p class="auth-switch">
+          Already have an account?
+          <a href="#" onclick="switchAuthTab('login')">Sign in →</a>
+        </p>
+      </form>
+    </div>
+  </div>
 
   <!-- HOME PAGE -->
   <div id="page-home" class="page active">
@@ -112,6 +201,39 @@
           <p class="section-sub">Click any specialization to see all available doctors</p>
         </div>
         <div class="spec-grid" id="specGrid"></div>
+      </div>
+    </section>
+
+    <!-- FIND BY AREA -->
+    <section class="section area-section">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-label">Find by Location</div>
+          <h2 class="section-title">Find Doctors Near Your Area</h2>
+          <p class="section-sub">Type a neighbourhood or city, or tap a quick pick below</p>
+        </div>
+
+        <!-- Autocomplete search -->
+        <div class="area-search-wrap">
+          <div class="area-search-box">
+            <span class="area-search-icon">📍</span>
+            <input
+              id="areaSearchInput"
+              class="area-search-input"
+              type="text"
+              placeholder="e.g. Bandra, Andheri, Saket, Koramangala..."
+              oninput="onAreaInput(event)"
+              onkeydown="onAreaKeydown(event)"
+              autocomplete="off"
+            />
+            <button class="area-search-btn" onclick="searchAreaFromInput()">Search Doctors</button>
+          </div>
+          <div class="area-suggestions" id="areaSuggestions" style="display:none"></div>
+        </div>
+
+        <!-- Quick pick chips -->
+        <div class="area-chips-label">🔥 Popular Areas</div>
+        <div class="area-chip-grid" id="areaChipGrid"></div>
       </div>
     </section>
 
@@ -229,6 +351,9 @@
       </div>
     </div>
     <div class="container section">
+      <!-- Area banner injected here by JS -->
+      <div id="doctorAreaBannerHost"></div>
+
       <div class="spec-filter-row" id="specFilterRow"></div>
       <div class="sort-row">
         <span id="doc-count" class="page-stat-text">Loading...</span>
@@ -327,5 +452,23 @@
   <div id="toast" class="toast"></div>
 
   <script src="app.js"></script>
+  <script>
+    // Password show/hide toggle
+    function togglePw(inputId, btn) {
+      const input = document.getElementById(inputId);
+      input.type  = input.type === 'password' ? 'text' : 'password';
+      btn.textContent = input.type === 'password' ? '👁' : '🙈';
+    }
+    // User dropdown toggle
+    function toggleUserDropdown() {
+      document.getElementById('userDropdown').classList.toggle('open');
+    }
+    // Close dropdown on outside click
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.nav-user-menu')) {
+        document.getElementById('userDropdown')?.classList.remove('open');
+      }
+    });
+  </script>
 </body>
 </html>

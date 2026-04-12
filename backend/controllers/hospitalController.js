@@ -1,17 +1,24 @@
-const { Hospital, Doctor, DoctorHospital } = require('../models');
+/**
+ * hospitalController.js
+ *
+ * OOSE Concepts:
+ *   - Encapsulation : getBasicInfo() instance method bundles hospital data access.
+ *   - Abstraction   : Controller calls Hospital.find() — doesn't know about the DB engine.
+ */
+const { Hospital, Doctor } = require('../models');
 
 exports.getHospitalById = async (req, res) => {
   try {
-    const hospital = await Hospital.findByPk(req.params.id, {
-      include: [{
-        model: Doctor,
-        as: 'doctors',
-        through: { attributes: ['visiting_days', 'timing'] },
-        attributes: ['id', 'name', 'specialization', 'experience', 'rating', 'phone', 'consultation_fee'],
-      }],
-    });
+    const hospital = await Hospital.findById(req.params.id);
     if (!hospital) return res.status(404).json({ success: false, message: 'Hospital not found' });
-    res.json({ success: true, data: hospital });
+
+    // Find doctors that visit this hospital
+    const doctors = await Doctor.find(
+      { 'hospitals.hospital': hospital._id },
+      'name specialization experience rating phone consultation_fee'
+    );
+
+    res.json({ success: true, data: { ...hospital.toJSON(), doctors } });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
@@ -20,14 +27,23 @@ exports.getHospitalById = async (req, res) => {
 exports.getAllHospitals = async (req, res) => {
   try {
     const { emergency } = req.query;
-    const where = {};
-    if (emergency !== undefined) where.emergency = emergency === 'true';
+    const query = {};
+    if (emergency !== undefined) query.emergency = emergency === 'true';
 
-    const hospitals = await Hospital.findAll({
-      where,
-      include: [{ model: Doctor, as: 'doctors', attributes: ['id', 'name', 'specialization'], through: { attributes: ['visiting_days', 'timing'] } }],
-    });
-    res.json({ success: true, data: hospitals, total: hospitals.length });
+    const hospitals = await Hospital.find(query);
+
+    // Attach associated doctors to each hospital
+    const results = await Promise.all(
+      hospitals.map(async (h) => {
+        const doctors = await Doctor.find(
+          { 'hospitals.hospital': h._id },
+          'name specialization'
+        );
+        return { ...h.toJSON(), doctors };
+      })
+    );
+
+    res.json({ success: true, data: results, total: results.length });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
@@ -35,24 +51,24 @@ exports.getAllHospitals = async (req, res) => {
 
 exports.getSymptomMap = (req, res) => {
   const symptomMap = {
-    'Chest Pain': 'Cardiologist',
-    'Headache': 'Neurologist',
-    'Migraine': 'Neurologist',
-    'Skin Rash': 'Dermatologist',
-    'Stomach Pain': 'Gastroenterologist',
-    'Nausea': 'Gastroenterologist',
-    'Joint Pain': 'Orthopedist',
-    'Back Pain': 'Orthopedist',
-    'Fever': 'General Physician',
-    'Cough': 'Pulmonologist',
-    'Diabetes': 'Endocrinologist',
-    'Anxiety': 'Psychiatrist',
-    'Depression': 'Psychiatrist',
-    'Eye Pain': 'Ophthalmologist',
-    'Ear Pain': 'ENT Specialist',
-    'Sore Throat': 'ENT Specialist',
-    'Tooth Pain': 'Dentist',
-    'Child Fever': 'Pediatrician',
+    'Chest Pain':    'Cardiologist',
+    'Headache':      'Neurologist',
+    'Migraine':      'Neurologist',
+    'Skin Rash':     'Dermatologist',
+    'Stomach Pain':  'Gastroenterologist',
+    'Nausea':        'Gastroenterologist',
+    'Joint Pain':    'Orthopedist',
+    'Back Pain':     'Orthopedist',
+    'Fever':         'General Physician',
+    'Cough':         'Pulmonologist',
+    'Diabetes':      'Endocrinologist',
+    'Anxiety':       'Psychiatrist',
+    'Depression':    'Psychiatrist',
+    'Eye Pain':      'Ophthalmologist',
+    'Ear Pain':      'ENT Specialist',
+    'Sore Throat':   'ENT Specialist',
+    'Tooth Pain':    'Dentist',
+    'Child Fever':   'Pediatrician',
   };
   res.json({ success: true, data: symptomMap });
 };

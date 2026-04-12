@@ -1,10 +1,17 @@
-const { Sequelize } = require('sequelize');
+/**
+ * database.js — MongoDB connection via Mongoose
+ *
+ * OOSE Concept: Abstraction
+ *   - Hides connection details. The rest of the app just calls connectDB()
+ *     without knowing the underlying driver implementation.
+ */
+const mongoose = require('mongoose');
 require('dotenv').config();
 
-const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: './medifind.sqlite',
-  logging: false,
-});
+const connectDB = async () => {
+  const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/medifind';
+  await mongoose.connect(uri);
+  console.log(`✅ MongoDB connected → ${mongoose.connection.name}`);
+};
 
-module.exports = sequelize;
+module.exports = connectDB;

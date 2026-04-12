@@ -1,22 +1,13 @@
-const sequelize = require('../config/database');
-const User = require('./User');
-const Doctor = require('./Doctor');
+/**
+ * models/index.js
+ *
+ * OOSE Concept: Single Responsibility
+ *   - Each model is defined in its own file.
+ *   - This file just re-exports them for convenient destructuring.
+ *   - No association logic needed here — relationships are embedded in schemas.
+ */
+const Doctor   = require('./Doctor');
 const Hospital = require('./Hospital');
-const DoctorHospital = require('./DoctorHospital');
+const User     = require('./User');
 
-// Associations
-Doctor.belongsToMany(Hospital, {
-  through: DoctorHospital,
-  foreignKey: 'doctor_id',
-  otherKey: 'hospital_id',
-  as: 'hospitals',
-});
-
-Hospital.belongsToMany(Doctor, {
-  through: DoctorHospital,
-  foreignKey: 'hospital_id',
-  otherKey: 'doctor_id',
-  as: 'doctors',
-});
-
-module.exports = { sequelize, User, Doctor, Hospital, DoctorHospital };
+module.exports = { Doctor, Hospital, User };

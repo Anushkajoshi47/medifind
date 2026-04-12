@@ -1,7 +1,15 @@
+/**
+ * authController.js
+ *
+ * OOSE Concept: Encapsulation
+ *   - Uses User.toSafeObject() to hide the password field from API responses.
+ *   - Business logic (JWT generation) is encapsulated in generateToken().
+ */
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const jwt    = require('jsonwebtoken');
 const { User } = require('../models');
 
+// Encapsulated token generator
 const generateToken = (id) =>
   jwt.sign({ id }, process.env.JWT_SECRET || 'medifind_secret', {
     expiresIn: process.env.JWT_EXPIRES_IN || '7d',
@@ -13,17 +21,17 @@ exports.register = async (req, res) => {
     if (!name || !email || !password)
       return res.status(400).json({ success: false, message: 'All fields required' });
 
-    const existing = await User.findOne({ where: { email } });
+    const existing = await User.findOne({ email });
     if (existing)
       return res.status(400).json({ success: false, message: 'Email already registered' });
 
     const hashed = await bcrypt.hash(password, 10);
-    const user = await User.create({ name, email, password: hashed });
+    const user   = await new User({ name, email, password: hashed }).save();
 
     res.status(201).json({
       success: true,
       message: 'Registered successfully',
-      data: { token: generateToken(user.id), user: { id: user.id, name: user.name, email: user.email } },
+      data: { token: generateToken(user._id), user: user.toSafeObject() },
     });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -33,7 +41,7 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ where: { email } });
+    const user = await User.findOne({ email });
     if (!user) return res.status(401).json({ success: false, message: 'Invalid credentials' });
 
     const match = await bcrypt.compare(password, user.password);
@@ -41,7 +49,7 @@ exports.login = async (req, res) => {
 
     res.json({
       success: true,
-      data: { token: generateToken(user.id), user: { id: user.id, name: user.name, email: user.email } },
+      data: { token: generateToken(user._id), user: user.toSafeObject() },
     });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -50,10 +58,9 @@ exports.login = async (req, res) => {
 
 exports.getProfile = async (req, res) => {
   try {
-    const user = await User.findByPk(req.userId, {
-      attributes: { exclude: ['password'] },
-    });
-    res.json({ success: true, data: user });
+    const user = await User.findById(req.userId);
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+    res.json({ success: true, data: user.toSafeObject() });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
@@ -61,19 +68,19 @@ exports.getProfile = async (req, res) => {
 
 exports.toggleBookmark = async (req, res) => {
   try {
-    const { type, id } = req.body; // type: 'doctor' or 'hospital'
-    const user = await User.findByPk(req.userId);
+    const { type, id } = req.body;
+    const user  = await User.findById(req.userId);
     const field = type === 'doctor' ? 'bookmarked_doctors' : 'bookmarked_hospitals';
-    let list = user[field] || [];
+    const list  = user[field].map(String);
 
-    if (list.includes(id)) {
-      list = list.filter((b) => b !== id);
+    if (list.includes(String(id))) {
+      user[field] = user[field].filter((b) => String(b) !== String(id));
     } else {
-      list = [...list, id];
+      user[field].push(id);
     }
 
-    await user.update({ [field]: list });
-    res.json({ success: true, data: { bookmarked: !user[field].includes(id), list } });
+    await user.save();
+    res.json({ success: true, data: { bookmarked: !list.includes(String(id)), list: user[field] } });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
