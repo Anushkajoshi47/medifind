@@ -1,5 +1,4 @@
-const API = 'http://localhost:5000/api';
-
+const API = process.env.BACKEND_API || 'http://localhost:5000/api';
 // ─── AUTH STATE ───────────────────────────────────────────────────────────────
 let currentUser = JSON.parse(localStorage.getItem('mf_user') || 'null');
 let authToken   = localStorage.getItem('mf_token') || '';
